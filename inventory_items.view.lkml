@@ -83,6 +83,23 @@ view: inventory_items {
 
   measure: count {
     type: count
-    drill_fields: [id, product_name, products.id, products.name, order_items.count]
+    drill_fields: [inventory_details*]
+  }
+
+  measure: total_cost {
+    type: sum
+    sql: ${cost} ;;
+    value_format_name: usd
+    drill_fields: [inventory_details*]
+  }
+
+  # ----- Sets of fields for drilling ------
+  set: inventory_details {
+    fields: [
+      id,
+      product_name,
+      products.id,
+      products.name,
+      order_items.count]
   }
 }

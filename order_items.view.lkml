@@ -90,8 +90,57 @@ view: order_items {
     sql: ${TABLE}.user_id ;;
   }
 
+  measure: orders_made {
+    type: count_distinct
+    sql: ${order_id} ;;
+    drill_fields: [
+      users.id,
+      users.first_name,
+      users.last_name,
+      count]
+  }
+
   measure: count {
+    label: "Items Sold"
     type: count
+    drill_fields: [detail*]
+  }
+
+  measure: total_sale_price {
+    type: sum
+    sql: ${sale_price} ;;
+    value_format_name: usd
+    drill_fields: [product_pricing*]
+  }
+
+  measure: average_sale_price {
+    type: average
+    sql: ${sale_price} ;;
+    value_format_name: usd
+    drill_fields: [product_pricing*]
+  }
+
+  measure: cumulative_total_sales {
+    type: running_total
+    sql: ${total_sale_price} ;;
+    value_format_name: usd
+    drill_fields: [product_pricing*]
+  }
+
+  measure: items_returned {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: returned_time
+      value: "-NULL"
+    }
+    drill_fields: [detail*]
+  }
+
+  measure: item_return_rate {
+    type: number
+    sql: (100.00 * COUNT(${returns.item_id})) / COUNT(${id}) ;;
+    value_format_name: decimal_2
     drill_fields: [detail*]
   }
 
@@ -104,6 +153,15 @@ view: order_items {
       users.last_name,
       inventory_items.id,
       inventory_items.product_name
+    ]
+  }
+
+  set: product_pricing {
+    fields: [
+      id,
+      inventory_items.product_name,
+      sale_price,
+      inventory_items.cost
     ]
   }
 }

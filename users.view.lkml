@@ -12,6 +12,13 @@ view: users {
     sql: ${TABLE}.age ;;
   }
 
+  dimension: age_group {
+    type: tier
+    tiers: [15, 26, 36, 51, 66]
+    style: integer
+    sql: ${age} ;;
+  }
+
   dimension: city {
     type: string
     sql: ${TABLE}.city ;;
@@ -60,11 +67,19 @@ view: users {
   dimension: latitude {
     type: number
     sql: ${TABLE}.latitude ;;
+    hidden: yes
   }
 
   dimension: longitude {
     type: number
     sql: ${TABLE}.longitude ;;
+    hidden: yes
+  }
+
+  dimension: customer_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
   }
 
   dimension: state {
@@ -82,8 +97,50 @@ view: users {
     sql: ${TABLE}.zip ;;
   }
 
+  dimension: is_new_customer {
+    type: yesno
+    sql: DATEDIFF(day, ${created_date}, current_date) <= 90 ;;
+  }
+
   measure: count {
     type: count
-    drill_fields: [id, first_name, last_name, events.count, order_items.count]
+    drill_fields: [user_details*, events.count]
+  }
+
+  measure: number_of_customers {
+    type: count_distinct
+    sql: ${id} ;;
+    drill_fields: [user_details*]
+  }
+
+  measure: number_of_customers_returning_items {
+    type: count_distinct
+    sql: ${returns.user_id} ;;
+    drill_fields: [user_details*]
+  }
+
+  measure: percent_of_users_with_returns {
+    type: count_distinct
+    sql: 100 * ${returns.user_id} / ${id} ;;
+    value_format_name: decimal_2
+    drill_fields: [user_details*, order_items.order_id, inventory_items.product_name]
+  }
+
+  measure: average_spend_per_customer {
+    type: number
+    sql: SUM(${order_items.sale_price}) / COUNT(${id}) ;;
+    value_format_name: usd
+    drill_fields: [user_details*]
+  }
+
+  set: user_details {
+    fields: [
+      id,
+      first_name,
+      last_name,
+      age_group,
+      gender,
+      order_items.count
+    ]
   }
 }

@@ -13,33 +13,33 @@ datagroup: rebecca_fashionly_default_datagroup {
 
 persist_with: rebecca_fashionly_default_datagroup
 
-explore: bsandell {}
+# explore: bsandell {}
 
-explore: company_list {}
+# explore: company_list {}
 
-explore: distribution_centers {}
+# explore: distribution_centers {}
 
-explore: events {
-  join: users {
-    type: left_outer
-    sql_on: ${events.user_id} = ${users.id} ;;
-    relationship: many_to_one
-  }
-}
+# explore: events {
+#  join: users {
+#    type: left_outer
+#    sql_on: ${events.user_id} = ${users.id} ;;
+#    relationship: many_to_one
+#  }
+# }
 
-explore: inventory_items {
-  join: products {
-    type: left_outer
-    sql_on: ${inventory_items.product_id} = ${products.id} ;;
-    relationship: many_to_one
-  }
+# explore: inventory_items {
+#  join: products {
+#    type: left_outer
+#    sql_on: ${inventory_items.product_id} = ${products.id} ;;
+#    relationship: many_to_one
+#  }
 
-  join: distribution_centers {
-    type: left_outer
-    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
-    relationship: many_to_one
-  }
-}
+#  join: distribution_centers {
+#    type: left_outer
+#    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
+#    relationship: many_to_one
+#  }
+# }
 
 explore: order_items {
   join: users {
@@ -65,14 +65,63 @@ explore: order_items {
     sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
     relationship: many_to_one
   }
-}
 
-explore: products {
-  join: distribution_centers {
+  join: returns {
     type: left_outer
-    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
-    relationship: many_to_one
+    sql_on: ${order_items.id} = ${returns.item_id} ;;
+    relationship: one_to_one
+  }
+
+  join: orders_completed {
+    view_label: "Order Items"
+    type: left_outer
+    sql_on: ${order_items.id} = ${orders_completed.item_id} ;;
+    relationship: one_to_one
   }
 }
 
-explore: users {}
+# explore: products {
+#  join: distribution_centers {
+#    type: left_outer
+#    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
+#    relationship: many_to_one
+#  }
+# }
+
+explore: users {
+  label: "Customers"
+  fields: [
+    ALL_FIELDS*,
+    -order_items.user_id,
+    -order_items.id,
+    -inventory_items.id,
+    -inventory_items.product_distribution_center_id,
+    -inventory_items.product_id,
+    -inventory_items.created_date
+    ]
+
+  join: returns {
+    type: left_outer
+    sql_on: ${users.id} = ${returns.user_id} ;;
+    relationship: one_to_one
+  }
+
+  join: order_items {
+    type: left_outer
+    sql_on: ${users.id} = ${order_items.user_id} ;;
+    relationship: one_to_many
+  }
+
+  join: orders_completed {
+    view_label: "Order Items"
+    type: left_outer
+    sql_on: ${users.id} = ${orders_completed.user_id} ;;
+    relationship: one_to_many
+  }
+
+  join: inventory_items {
+    type: left_outer
+    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
+    relationship: many_to_one
+  }
+}
