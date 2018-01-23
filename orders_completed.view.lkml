@@ -63,15 +63,16 @@ view: orders_completed {
 
   measure: gross_margin_percentage {
     type: number
-    sql: (100 * SUM(${sale_price} - ${inventory_items.cost})) / SUM(${order_items.sale_price}) ;;
-    value_format_name: decimal_2
-    drill_fields: [product_pricing*]
+    sql: (SUM(${sale_price} - ${inventory_items.cost})) / SUM(${order_items.sale_price}) ;;
+    value_format_name: percent_2
+    drill_fields: [brand_details*]
   }
 
   set: product_pricing {
     fields: [
       item_id,
       inventory_items.product_name,
+      inventory_items.product_brand,
       sale_price,
       inventory_items.cost
     ]
@@ -79,10 +80,10 @@ view: orders_completed {
 
   set: brand_details {
     fields: [
-      item_id,
       inventory_items.product_name,
       inventory_items.product_category,
       inventory_items.product_brand,
+      inventory_items.product_facebook,
       inventory_items.product_department
     ]
   }

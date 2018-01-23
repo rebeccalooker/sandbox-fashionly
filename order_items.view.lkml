@@ -90,6 +90,11 @@ view: order_items {
     sql: ${TABLE}.user_id ;;
   }
 
+  dimension: create_month {
+    type: date_month_name
+    sql: ${TABLE}.created_at ;;
+  }
+
   measure: orders_made {
     type: count_distinct
     sql: ${order_id} ;;

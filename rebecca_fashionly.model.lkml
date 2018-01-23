@@ -125,3 +125,12 @@ explore: users {
     relationship: many_to_one
   }
 }
+
+explore: user_patterns {
+  label: "Customer Behavior"
+#  join: users {
+#    type: inner
+#    sql_on: ${users.id} = ${user_patterns.customer_id} ;;
+#    relationship: one_to_one
+#  }
+}

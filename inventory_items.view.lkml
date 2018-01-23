@@ -29,6 +29,20 @@ view: inventory_items {
   dimension: product_brand {
     type: string
     sql: ${TABLE}.product_brand ;;
+    html: <a href="https://www.google.com/search?q={{value}}" target="_blank"><button>{{value}}</button></a>
+        ;;
+    drill_fields: [
+      product_category,
+      product_name
+    ]
+  }
+
+  dimension: product_facebook {
+    label: "Facebook Link"
+    type: string
+    sql: ${TABLE}.product_brand ;;
+    html: <a href="https://www.facebook.com/search/top/?q={{value}}" target="_blank"><button>{{value}} Facebook</button></a>
+        ;;
   }
 
   dimension: product_category {

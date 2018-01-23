@@ -121,8 +121,8 @@ view: users {
 
   measure: percent_of_users_with_returns {
     type: count_distinct
-    sql: 100 * ${returns.user_id} / ${id} ;;
-    value_format_name: decimal_2
+    sql: ${returns.user_id} / ${id} ;;
+    value_format_name: percent_2
     drill_fields: [user_details*, order_items.order_id, inventory_items.product_name]
   }
 
