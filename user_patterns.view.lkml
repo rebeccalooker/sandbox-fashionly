@@ -173,20 +173,22 @@ view: user_patterns {
     description: "Sum of orders from all customers in this group"
     type: sum
     sql: ${customer_total_orders} ;;
-    drill_fields: [user_profile*]
+    drill_fields: [user_orders*]
   }
 
   measure: average_lifetime_orders {
     description: "Average number of orders from all customers in this group"
     type: average
     sql: ${customer_total_orders} ;;
-    drill_fields: [user_profile*]
+    value_format_name: decimal_2
+    drill_fields: [user_orders*]
   }
 
   measure: total_lifetime_revenue {
     description: "Sum of revenue from all customers in this group"
     type: sum
     sql: ${customer_total_revenue} ;;
+    value_format_name: usd
     drill_fields: [user_profile*]
   }
 
@@ -194,6 +196,7 @@ view: user_patterns {
     description: "Average revenue from all customers in this group"
     type: average
     sql: ${customer_total_revenue} ;;
+    value_format_name: usd
     drill_fields: [user_profile*]
   }
 
@@ -213,14 +216,13 @@ view: user_patterns {
     ]
   }
 
-#  set: user_orders {
-#    fields: [
-#      customer_id,
-#      full_name,
-#      order_items.order_id,
-#      order_items.created_raw
-#    ]
-#  }
+  set: user_orders {
+    fields: [
+      customer_id,
+      full_name,
+      orders_completed.order_id
+    ]
+  }
 
   set: user_dates {
     fields: [

@@ -93,16 +93,17 @@ view: order_items {
   dimension: create_month {
     type: date_month_name
     sql: ${TABLE}.created_at ;;
+    hidden: yes
   }
 
   measure: orders_made {
-    type: count_distinct
-    sql: ${order_id} ;;
+    type: number
+    sql: COUNT(${order_id}) ;;
     drill_fields: [
       users.id,
       users.first_name,
       users.last_name,
-      count]
+      order_id]
   }
 
   measure: count {

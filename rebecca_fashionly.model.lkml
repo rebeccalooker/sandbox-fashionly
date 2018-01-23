@@ -128,9 +128,50 @@ explore: users {
 
 explore: user_patterns {
   label: "Customer Behavior"
-#  join: users {
-#    type: inner
-#    sql_on: ${users.id} = ${user_patterns.customer_id} ;;
-#    relationship: one_to_one
-#  }
+  view_label: "Customer Behavior"
+  fields: [
+    ALL_FIELDS*,
+    -orders_completed.total_gross_margin,
+    -orders_completed.average_gross_margin,
+    -orders_completed.gross_margin_percentage
+  ]
+
+  join: orders_completed {
+    view_label: "Orders"
+    type: left_outer
+    sql_on: ${user_patterns.customer_id} = ${orders_completed.user_id} ;;
+    relationship: one_to_many
+  }
+
+  join: order_items {
+    view_label: "Orders"
+    type: left_outer
+    sql_on: ${user_patterns.customer_id} = ${order_items.user_id} ;;
+    relationship: one_to_many
+    fields: [
+      order_items.order_id,
+      order_items.created_date,
+      order_items.created_month,
+      order_items.created_quarter,
+      order_items.created_year,
+      order_items.orders_made
+    ]
+  }
+
+  join: event_facts {
+    view_label: "Session Details"
+    type: left_outer
+    sql_on: ${user_patterns.customer_id} = ${event_facts.user_id} ;;
+    relationship: one_to_many
+  }
+
+  join: users {
+    view_label: "Session Details"
+    type: inner
+    sql_on: ${users.id} = ${user_patterns.customer_id} ;;
+    relationship: one_to_one
+    fields: [
+      users.traffic_source
+    ]
+  }
 }
