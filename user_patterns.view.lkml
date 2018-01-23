@@ -5,7 +5,7 @@ view: user_patterns {
           u.first_name,
           u.last_name,
           u.age,
-          u.gender
+          u.gender,
           COUNT(oi.order_id) AS customer_total_orders,
           SUM(oi.sale_price) AS customer_total_revenue,
           MIN(oi.created_at) AS first_customer_order,
