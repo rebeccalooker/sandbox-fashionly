@@ -167,6 +167,7 @@ view: user_patterns {
     description: "Number of customers"
     type: count
     drill_fields: [user_profile*]
+    hidden: yes
   }
 
   measure: total_lifetime_orders {
