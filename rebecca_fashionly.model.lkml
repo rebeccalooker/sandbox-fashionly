@@ -171,7 +171,8 @@ explore: user_patterns {
     sql_on: ${users.id} = ${user_patterns.customer_id} ;;
     relationship: one_to_one
     fields: [
-      users.traffic_source
+      users.traffic_source,
+      users.customer_location
     ]
   }
 
