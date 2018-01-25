@@ -55,6 +55,7 @@ view: orders_completed {
   }
 
   measure: average_gross_margin {
+    description: "For order items"
     type: average
     sql: ${sale_price} - ${inventory_items.cost} ;;
     value_format_name: usd
@@ -65,6 +66,13 @@ view: orders_completed {
     type: number
     sql: (SUM(${sale_price} - ${inventory_items.cost})) / SUM(${order_items.sale_price}) ;;
     value_format_name: percent_2
+    drill_fields: [brand_details*]
+  }
+
+  measure: average_order_profit {
+    type: number
+    sql: (SUM(${sale_price} - ${inventory_items.cost})) / ${order_items.orders_made} ;;
+    value_format_name: usd
     drill_fields: [brand_details*]
   }
 

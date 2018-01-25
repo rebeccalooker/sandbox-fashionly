@@ -174,4 +174,12 @@ explore: user_patterns {
       users.traffic_source
     ]
   }
+
+  join: inventory_items {
+    view_label: "Orders"
+    type: left_outer
+    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
+    relationship: one_to_many
+    fields: [inventory_items.cost]
+  }
 }

@@ -107,7 +107,7 @@ view: order_items {
   }
 
   measure: count {
-    label: "Items Sold"
+    label: "Items Ordered"
     type: count
     drill_fields: [detail*]
   }
