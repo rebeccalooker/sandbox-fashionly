@@ -63,6 +63,7 @@ view: order_items {
   dimension: sale_price {
     type: number
     sql: ${TABLE}.sale_price ;;
+    value_format_name: usd
   }
 
   dimension_group: shipped {
@@ -96,7 +97,45 @@ view: order_items {
     hidden: yes
   }
 
-  measure: orders_made {
+  dimension: is_expensive_item_returned_in_past_30_days {
+    type: yesno
+    sql: ${sale_price} >= 100.00 and
+        DATEDIFF(day, ${returned_date}, current_date) <= 30 ;;
+    # hidden: yes
+  }
+
+  # ------ PS Case Study, Use Case #2 ------
+  dimension: days_since_signup {
+    type: number
+    sql: DATEDIFF(day, ${created_date}, current_date) ;;
+    group_label: "Registration"
+  }
+
+  dimension: signup_days_cohort {
+    type: tier
+    sql: ${days_since_signup} ;;
+    tiers: [31, 61, 181, 366, 731]
+    style: integer
+    group_label: "Registration"
+  }
+
+  dimension: months_since_signup {
+    type: number
+    sql: (DATEDIFF(day, ${created_date}, current_date)) / 30 ;;
+    value_format_name: decimal_1
+    group_label: "Registration"
+  }
+
+  dimension: signup_months_cohort {
+    type: tier
+    sql: ${months_since_signup} ;;
+    tiers: [1, 6, 12, 24, 36, 60]
+    style: integer
+    group_label: "Registration"
+  }
+  # ----------------------------------------
+
+  measure: count_orders_made {
     type: number
     sql: COUNT(${order_id}) ;;
     drill_fields: [
@@ -106,7 +145,7 @@ view: order_items {
       order_id]
   }
 
-  measure: count {
+  measure: count_items_ordered {
     label: "Items Ordered"
     type: count
     drill_fields: [detail*]
@@ -133,6 +172,49 @@ view: order_items {
     drill_fields: [product_pricing*]
   }
 
+  measure: total_gross_revenue {
+    type: sum
+    sql: ${sale_price} ;;
+    filters: {
+      field: status
+      value: "-Cancelled, -Returned"
+      }
+    value_format_name: usd
+  }
+
+  measure: average_gross_revenue {
+    type: average
+    sql: ${sale_price} ;;
+    filters: {
+      field: status
+      value: "-Cancelled, -Returned"
+        }
+    value_format_name: usd
+  }
+
+  measure: total_gross_margin {
+    type: sum
+    sql: ${sale_price} - ${inventory_items.cost}) ;;
+    filters: {
+      field: status
+      value: "-Cancelled, -Returned"
+      }
+    value_format_name: usd
+    drill_fields: [brand_details*]
+  }
+
+  measure: average_gross_margin {
+    description: "For order items"
+    type: average
+    sql: ${sale_price} - ${inventory_items.cost} ;;
+    filters: {
+      field: status
+      value: "-Cancelled, -Returned"
+      }
+    value_format_name: usd
+    drill_fields: [product_pricing*]
+  }
+
   measure: items_returned {
     type: count_distinct
     sql: ${id} ;;
@@ -145,9 +227,64 @@ view: order_items {
 
   measure: item_return_rate {
     type: number
-    sql: (100.00 * COUNT(${returns.item_id})) / COUNT(${id}) ;;
-    value_format_name: decimal_2
+    sql: 1.000 * ${items_returned} / ${count_items_ordered} ;;
+    value_format_name: percent_2
     drill_fields: [detail*]
+  }
+
+  measure: expensive_items_returned_in_past_30_days {
+    type: count_distinct
+    sql: ${is_expensive_item_returned_in_past_30_days} ;;
+    filters: {
+      field: is_expensive_item_returned_in_past_30_days
+      value: "yes"
+      }
+    }
+
+  measure: dynamic_order_finances {
+    type: number
+    label_from_parameter: order_finances
+    sql:
+      CASE WHEN {% parameter order_finances %} ='total_sale_price' THEN ${total_sale_price}
+        WHEN {% parameter order_finances %} ='order_count' THEN ${count_orders_made}
+        WHEN {% parameter order_finances %} ='average_sale_price' THEN ${average_sale_price}
+        ELSE null
+       END ;;
+  }
+
+  # ------ PS Case Study, Use Case #2 ------
+  measure: average_days_since_signup {
+    type: average
+    sql: ${days_since_signup} ;;
+  }
+
+  measure: average_months_since_signup {
+    type: average
+    sql: ${months_since_signup} ;;
+    value_format_name: decimal_1
+  }
+  # ----------------------------------------
+
+  # ------ Parameters ------
+  ## produce "FILTER-ONLY FIELDS" in frontend
+  parameter: order_finances {
+    allowed_value: {
+      label: "Total Sale Price"
+      value: "total_sale_price"
+    }
+    allowed_value: {
+      label: "Order Count"
+      value: "order_count"
+    }
+    allowed_value: {
+      label: "Average Sale Price"
+      value: "average_sale_price"
+    }
+  }
+
+  parameter: agg_type {
+    suggestions: ["Sum", "Average", "Min", "Max"]
+    hidden: yes
   }
 
   # ----- Sets of fields for drilling ------
@@ -168,6 +305,16 @@ view: order_items {
       inventory_items.product_name,
       sale_price,
       inventory_items.cost
+    ]
+  }
+
+  set: brand_details {
+    fields: [
+      inventory_items.product_name,
+      inventory_items.product_category,
+      inventory_items.product_brand,
+      inventory_items.product_facebook,
+      inventory_items.product_department
     ]
   }
 }

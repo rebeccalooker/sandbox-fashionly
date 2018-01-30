@@ -131,8 +131,6 @@ explore: user_patterns {
   view_label: "Customer Behavior"
   fields: [
     ALL_FIELDS*,
-    -orders_completed.total_gross_margin,
-    -orders_completed.average_gross_margin,
     -orders_completed.gross_margin_percentage
   ]
 
@@ -154,7 +152,7 @@ explore: user_patterns {
       order_items.created_month,
       order_items.created_quarter,
       order_items.created_year,
-      order_items.orders_made
+      order_items.count_orders_made
     ]
   }
 
@@ -182,5 +180,23 @@ explore: user_patterns {
     sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
     relationship: one_to_many
     fields: [inventory_items.cost]
+  }
+}
+
+explore: users_basic_information {
+    label: "Customers Basic"
+    extends: [users]      ## activate the joins so you don't need to retype them
+    view_name: users      ## set view name back to the original explore's base view name
+    from: users_basic
+  }
+
+explore: order_items_basic {
+  extends: [order_items]
+  view_name: order_items
+  join: users {
+      from: users_basic
+      type: inner
+      sql_on: ${order_items.user_id} = ${users.id} ;;
+      relationship: many_to_one
   }
 }

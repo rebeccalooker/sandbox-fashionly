@@ -107,12 +107,6 @@ view: users {
     drill_fields: [user_details*, events.count]
   }
 
-  measure: number_of_customers {
-    type: count_distinct
-    sql: ${id} ;;
-    drill_fields: [user_details*]
-  }
-
   measure: number_of_customers_returning_items {
     type: count_distinct
     sql: ${returns.user_id} ;;

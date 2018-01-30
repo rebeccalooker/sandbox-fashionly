@@ -48,6 +48,11 @@ view: inventory_items {
   dimension: product_category {
     type: string
     sql: ${TABLE}.product_category ;;
+    link: {
+      label: "Category Link~"
+      url: "http://www.google.com/search?q={{value}}"
+      icon_url: "https://files.slack.com/files-pri/T024F428S-F8YLV4GDR/image.png"
+    }
   }
 
   dimension: product_department {
@@ -102,6 +107,13 @@ view: inventory_items {
 
   measure: total_cost {
     type: sum
+    sql: ${cost} ;;
+    value_format_name: usd
+    drill_fields: [inventory_details*]
+  }
+
+  measure: average_cost {
+    type: average
     sql: ${cost} ;;
     value_format_name: usd
     drill_fields: [inventory_details*]
