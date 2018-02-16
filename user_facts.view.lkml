@@ -1,4 +1,4 @@
-view: user_patterns {
+view: user_facts {
   derived_table: {
     sql:
       SELECT u.id AS customer_id,
@@ -23,21 +23,12 @@ view: user_patterns {
     primary_key: yes
     type: number
     sql: ${TABLE}.customer_id ;;
+    hidden: yes
   }
 
   dimension: full_name {
     type: string
     sql: ${TABLE}.first_name || ' ' || ${TABLE}.last_name ;;
-  }
-
-  dimension: age {
-    type: number
-    sql: ${TABLE}.age ;;
-  }
-
-  dimension: gender {
-    type: string
-    sql: ${TABLE}.gender ;;
   }
 
   dimension: customer_total_orders {
@@ -117,7 +108,7 @@ view: user_patterns {
     drill_fields: [user_profile*]
   }
 
-  dimension_group: first_order_date {
+  dimension_group: first_order {
     description: "Date of customer's first order placed on the website"
     type: time
     timeframes: [
@@ -131,7 +122,7 @@ view: user_patterns {
     sql: ${TABLE}.first_customer_order ;;
   }
 
-  dimension_group: latest_order_date {
+  dimension_group: latest_order {
     description: "Date of customer's latest order placed on the website"
     type: time
     timeframes: [
@@ -155,6 +146,12 @@ view: user_patterns {
     description: "Number of days since customer's latest order"
     type: number
     sql: DATEDIFF(day, ${TABLE}.last_customer_order, current_date) ;;
+  }
+
+  dimension: ordered_recently {
+    description: "Whether or not the customer made a recent order"
+    type: yesno
+    sql: ${days_since_latest_order} <= 30 ;;
   }
 
   dimension: repeat_customer {
@@ -208,12 +205,14 @@ view: user_patterns {
     drill_fields: [user_dates*]
   }
 
+  # ------ Drill fields ------
+
   set: user_profile {
     fields: [
       customer_id,
       full_name,
-      age,
-      gender
+      users.age,
+      users.gender
     ]
   }
 
@@ -229,8 +228,8 @@ view: user_patterns {
     fields: [
       customer_id,
       full_name,
-      first_order_date_raw,
-      latest_order_date_raw
+      first_order_date,
+      latest_order_date
     ]
   }
 

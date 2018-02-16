@@ -102,6 +102,36 @@ view: users {
     sql: DATEDIFF(day, ${created_date}, current_date) <= 90 ;;
   }
 
+  # ------ PS Case Study, Use Case #2 ------
+  dimension: days_since_signup {
+    type: number
+    sql: DATEDIFF(day, ${created_date}, current_date) ;;
+    group_label: "Registration"
+  }
+
+  dimension: signup_days_cohort {
+    type: tier
+    sql: ${days_since_signup} ;;
+    tiers: [31, 61, 181, 366, 731]
+    style: integer
+    group_label: "Registration"
+  }
+
+  dimension: months_since_signup {
+    type: number
+    sql: (DATEDIFF(day, ${created_date}, current_date)) / 30 ;;
+    group_label: "Registration"
+  }
+
+  dimension: signup_months_cohort {
+    type: tier
+    sql: ${months_since_signup} ;;
+    tiers: [1, 6, 12, 24, 36, 60]
+    style: integer
+    group_label: "Registration"
+  }
+  # ----------------------------------------
+
   measure: count {
     type: count
     drill_fields: [user_details*, events.count]
@@ -126,6 +156,26 @@ view: users {
     value_format_name: usd
     drill_fields: [user_details*]
   }
+
+  # ------ PS Case Study, Use Case #2 ------
+  measure: average_days_since_signup {
+    type: average
+    sql: ${days_since_signup} ;;
+  }
+
+  measure: average_months_since_signup {
+    type: average
+    sql: ${months_since_signup} ;;
+    value_format_name: decimal_1
+  }
+  # ----------------------------------------
+
+  # ------ Filter ------
+  filter: months_ago_when_customer_signed_up {
+    suggest_explore: users
+    suggest_dimension: months_since_signup
+  }
+  # -----------------------
 
   set: user_details {
     fields: [

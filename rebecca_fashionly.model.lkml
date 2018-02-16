@@ -90,6 +90,7 @@ explore: order_items {
 
 explore: users {
   label: "Customers"
+  view_label: "Customer Details"
   fields: [
     ALL_FIELDS*,
     -order_items.user_id,
@@ -113,7 +114,7 @@ explore: users {
   }
 
   join: orders_completed {
-    view_label: "Order Items"
+    view_label: "Orders"
     type: left_outer
     sql_on: ${users.id} = ${orders_completed.user_id} ;;
     relationship: one_to_many
@@ -124,62 +125,43 @@ explore: users {
     sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
     relationship: many_to_one
   }
-}
-
-explore: user_patterns {
-  label: "Customer Behavior"
-  view_label: "Customer Behavior"
-  fields: [
-    ALL_FIELDS*,
-    -orders_completed.gross_margin_percentage
-  ]
-
-  join: orders_completed {
-    view_label: "Orders"
-    type: left_outer
-    sql_on: ${user_patterns.customer_id} = ${orders_completed.user_id} ;;
-    relationship: one_to_many
-  }
-
-  join: order_items {
-    view_label: "Orders"
-    type: left_outer
-    sql_on: ${user_patterns.customer_id} = ${order_items.user_id} ;;
-    relationship: one_to_many
-    fields: [
-      order_items.order_id,
-      order_items.created_date,
-      order_items.created_month,
-      order_items.created_quarter,
-      order_items.created_year,
-      order_items.count_orders_made
-    ]
-  }
 
   join: event_facts {
     view_label: "Session Details"
     type: left_outer
-    sql_on: ${user_patterns.customer_id} = ${event_facts.user_id} ;;
+    sql_on: ${users.id} = ${event_facts.user_id} ;;
     relationship: one_to_many
   }
 
-  join: users {
-    view_label: "Session Details"
+  join: user_facts {
+    view_label: "Customer Facts"
     type: inner
-    sql_on: ${users.id} = ${user_patterns.customer_id} ;;
+    sql_on: ${users.id} = ${user_facts.customer_id} ;;
     relationship: one_to_one
-    fields: [
-      users.traffic_source,
-      users.customer_location
-    ]
   }
 
-  join: inventory_items {
+  join: user_order_sequences {
+    view_label: "Customer Facts"
+    from: order_sequences
+    type: left_outer
+    relationship: one_to_many
+    sql_on: ${users.id} = ${user_order_sequences.user_id} ;;
+    fields: [user_order_sequences.min_inter_order_days,
+      user_order_sequences.is_quick_repurchase_customer,
+      user_order_sequences.avg_days_between_orders,
+      user_order_sequences.max_days_between_orders]
+  }
+
+  join: order_sequences {
     view_label: "Orders"
     type: left_outer
-    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
     relationship: one_to_many
-    fields: [inventory_items.cost]
+    sql_on: ${users.id} = ${order_sequences.user_id}
+            and ${order_items.order_id} = ${order_sequences.order_id} ;;
+    fields: [order_sequences.order_sequence_number,
+      order_sequences.days_until_next_order,
+      order_sequences.is_first_purchase,
+      order_sequences.has_subsequent_order]
   }
 }
 
@@ -188,7 +170,8 @@ explore: users_basic_information {
     extends: [users]      ## activate the joins so you don't need to retype them
     view_name: users      ## set view name back to the original explore's base view name
     from: users_basic
-  }
+    hidden: yes
+}
 
 explore: order_items_basic {
   extends: [order_items]
@@ -199,4 +182,5 @@ explore: order_items_basic {
       sql_on: ${order_items.user_id} = ${users.id} ;;
       relationship: many_to_one
   }
+  hidden: yes
 }

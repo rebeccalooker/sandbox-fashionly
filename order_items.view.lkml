@@ -104,37 +104,6 @@ view: order_items {
     # hidden: yes
   }
 
-  # ------ PS Case Study, Use Case #2 ------
-  dimension: days_since_signup {
-    type: number
-    sql: DATEDIFF(day, ${created_date}, current_date) ;;
-    group_label: "Registration"
-  }
-
-  dimension: signup_days_cohort {
-    type: tier
-    sql: ${days_since_signup} ;;
-    tiers: [31, 61, 181, 366, 731]
-    style: integer
-    group_label: "Registration"
-  }
-
-  dimension: months_since_signup {
-    type: number
-    sql: (DATEDIFF(day, ${created_date}, current_date)) / 30 ;;
-    value_format_name: decimal_1
-    group_label: "Registration"
-  }
-
-  dimension: signup_months_cohort {
-    type: tier
-    sql: ${months_since_signup} ;;
-    tiers: [1, 6, 12, 24, 36, 60]
-    style: integer
-    group_label: "Registration"
-  }
-  # ----------------------------------------
-
   measure: count_orders_made {
     type: number
     sql: COUNT(${order_id}) ;;
@@ -194,7 +163,7 @@ view: order_items {
 
   measure: total_gross_margin {
     type: sum
-    sql: ${sale_price} - ${inventory_items.cost}) ;;
+    sql: ${sale_price} - ${inventory_items.cost} ;;
     filters: {
       field: status
       value: "-Cancelled, -Returned"
@@ -251,19 +220,6 @@ view: order_items {
         ELSE null
        END ;;
   }
-
-  # ------ PS Case Study, Use Case #2 ------
-  measure: average_days_since_signup {
-    type: average
-    sql: ${days_since_signup} ;;
-  }
-
-  measure: average_months_since_signup {
-    type: average
-    sql: ${months_since_signup} ;;
-    value_format_name: decimal_1
-  }
-  # ----------------------------------------
 
   # ------ Parameters ------
   ## produce "FILTER-ONLY FIELDS" in frontend

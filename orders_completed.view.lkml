@@ -40,20 +40,14 @@ view: orders_completed {
     hidden: yes
   }
 
-  measure: total_gross_revenue {
-    type: sum
-    sql: ${sale_price} ;;
-    value_format_name: usd
-    drill_fields: [product_pricing*]
-  }
-
   measure: orders_completed {
-    type: count
+    type: count_distinct
+    sql: ${order_id} ;;
   }
 
   measure: gross_margin_percentage {
     type: number
-    sql: (SUM(${sale_price} - ${inventory_items.cost})) / SUM(${order_items.sale_price}) ;;
+    sql: SUM(${sale_price} - ${inventory_items.cost}) / SUM(${order_items.sale_price}) ;;
     value_format_name: percent_2
     drill_fields: [brand_details*]
   }
