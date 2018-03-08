@@ -1,10 +1,12 @@
 view: products {
   sql_table_name: public.products ;;
 
+# ------ Dimensions ------
   dimension: id {
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
+    hidden: yes
   }
 
   dimension: brand {
@@ -48,8 +50,13 @@ view: products {
     sql: ${TABLE}.sku ;;
   }
 
+# ------ Measures ------
   measure: count {
     type: count
-    drill_fields: [id, name, distribution_centers.id, distribution_centers.name, inventory_items.count]
+    drill_fields: [id, name
+      , distribution_centers.id
+      , distribution_centers.name
+      , inventory_items.count
+      ]
   }
 }

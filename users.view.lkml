@@ -99,7 +99,7 @@ view: users {
 
   dimension: is_new_customer {
     type: yesno
-    sql: DATEDIFF(day, ${created_date}, current_date) <= 90 ;;
+    sql: ${days_since_signup} <= 90 ;;
   }
 
   # ------ PS Case Study, Use Case #2 ------
@@ -155,6 +155,17 @@ view: users {
     sql: SUM(${order_items.sale_price}) / COUNT(${id}) ;;
     value_format_name: usd
     drill_fields: [user_details*]
+  }
+
+  measure: total_sales_new_customers {
+    type: sum
+    sql: ${order_items.sale_price} ;;
+    filters: {
+      field: is_new_customer
+      value: "yes"
+    }
+    value_format_name: usd
+    drill_fields: [order_items.product_pricing*]
   }
 
   # ------ PS Case Study, Use Case #2 ------

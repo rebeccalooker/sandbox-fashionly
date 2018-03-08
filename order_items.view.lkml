@@ -221,6 +221,16 @@ view: order_items {
        END ;;
   }
 
+  measure: monthly_target {
+    type: number
+    sql:
+    (max(case when to_char(${TABLE}.created_at, 'YYYY-MM') in ('2016-01','2016-02', '2016-03') then 200000
+    when to_char(${TABLE}.created_at, 'YYYY-MM') in ('2016-04','2016-05', '2016-06') then 215000
+    when to_char(${TABLE}.created_at, 'YYYY-MM') in ('2016-07','2016-08', '2016-09') then 230000
+    when to_char(${TABLE}.created_at, 'YYYY-MM') in ('2016-10','2016-11', '2016-12') then 245000
+    else null end)) ;;
+  }
+
   # ------ Parameters ------
   ## produce "FILTER-ONLY FIELDS" in frontend
   parameter: order_finances {

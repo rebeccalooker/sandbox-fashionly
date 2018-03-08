@@ -80,13 +80,27 @@ explore: order_items {
   }
 }
 
-# explore: products {
-#  join: distribution_centers {
+explore: product_comparisons {
+  label: "Products"
+  view_label: "Product"
+#   join: distribution_centers {
 #    type: left_outer
 #    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
 #    relationship: many_to_one
-#  }
-# }
+#   }
+#
+#   join: inventory_items {
+#     type: left_outer
+#     sql_on: ${inventory_items.product_id} = ${products.id} ;;
+#     relationship: one_to_many
+#   }
+#
+#   join: order_items {
+#     type: left_outer
+#     sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
+#     relationship: one_to_many
+#   }
+}
 
 explore: users {
   label: "Customers"
