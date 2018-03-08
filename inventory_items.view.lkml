@@ -29,8 +29,13 @@ view: inventory_items {
   dimension: product_brand {
     type: string
     sql: ${TABLE}.product_brand ;;
-    html: <a href="https://www.google.com/search?q={{value}}" target="_blank"><button>{{value}}</button></a>
-        ;;
+    # html: <a href="https://www.google.com/search?q={{value}}" target="_blank"><button>{{value}}</button></a>
+    #    ;;
+    link: {
+      label: "{{ value }} Dashboard"
+      url: "https://sandboxcl.dev.looker.com/dashboards/484?Brand%20Name={{ value }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
     drill_fields: [
       product_category,
       product_name

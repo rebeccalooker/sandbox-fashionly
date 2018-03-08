@@ -12,11 +12,21 @@ view: products {
   dimension: brand {
     type: string
     sql: ${TABLE}.brand ;;
+    link: {
+      label: "{{ value }} Dashboard"
+      url: "https://sandboxcl.dev.looker.com/dashboards/484?Brand%20Name={{ value }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
   }
 
   dimension: category {
     type: string
     sql: ${TABLE}.category ;;
+    link: {
+      label: "{{ value }} Dashboard"
+      url: "https://sandboxcl.dev.looker.com/dashboards/484?Category={{ value }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
   }
 
   dimension: cost {

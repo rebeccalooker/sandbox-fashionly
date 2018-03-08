@@ -8,8 +8,9 @@ view: product_comparisons {
             ON p.id = ii.product_id
           JOIN public.order_items as oi
             ON ii.id = oi.inventory_item_id
+        WHERE p.brand != {% parameter compare_brand %}
         {% if compare_category._is_filtered %}
-        WHERE {% condition compare_category %} p.category {% endcondition %}
+          AND {% condition compare_category %} p.category {% endcondition %}
           {% endif %}
         GROUP BY 1, 2, 3
         ;;
@@ -19,11 +20,21 @@ view: product_comparisons {
     primary_key: yes
     type: string
     sql: ${TABLE}.brand ;;
+    link: {
+      label: "{{ value }} Dashboard"
+      url: "https://sandboxcl.dev.looker.com/dashboards/484?Brand%20Name={{ value }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
   }
 
   dimension: category {
     type: string
     sql: ${TABLE}.category ;;
+    link: {
+      label: "{{ value }} Dashboard"
+      url: "https://sandboxcl.dev.looker.com/dashboards/484?Category={{ value }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
   }
 
   dimension_group: purchase {
@@ -60,17 +71,16 @@ view: product_comparisons {
 #           and {% parameter compare_brand %} = ${brand}
 #         ) ;;
 #   }
-#
-#   dimension: brand_in_category {
+
+#   dimension: category_in_brand {
 #     description: "Brand in the same selected Compare Category"
 #     type: string
-#     sql: ${brand} IN (
-#         SELECT ${brand}
+#     sql: ${category} IN (
+#         SELECT ${category}
 #         FROM ${TABLE}
 #         WHERE
-#           {% condition compare_category %} ${category} {% endcondition %}
-#         )
-#           and {% parameter compare_brand %} != ${brand} ;;
+#           {% condition compare_brand %} ${brand} {% endcondition %}
+#         ) ;;
 #     hidden: yes
 #   }
 
@@ -112,9 +122,9 @@ view: product_comparisons {
     suggest_dimension: category
   }
 
-#   parameter: compare_brand {
-#     description: "Main brand for comparison"
-#     type: string
-#     suggest_dimension: brand
-#   }
+  parameter: compare_brand {
+    description: "Main brand for comparison"
+    type: string
+    suggest_dimension: brand
+  }
 }
