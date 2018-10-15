@@ -191,7 +191,52 @@ view: order_items {
       field: returned_time
       value: "-NULL"
     }
-    drill_fields: [detail*]
+    drill_fields: [detail*, sale_price]
+    link: {
+      label: "Explore Top 10 Results"
+      url: "{% assign vis_config = '{
+  \"type\": \"table\",
+  \"show_view_names\": false,
+  \"show_row_numbers\": false,
+  \"truncate_column_names\": false,
+  \"table_theme\": \"gray\",
+  \"enable_conditional_formatting\": true,
+  \"conditional_formatting\": [
+    {
+      \"type\": \"low to high\",
+      \"value\": null,
+      \"background_color\": null,
+      \"font_color\": null,
+      \"palette\": {
+        \"name\": \"Custom\",
+        \"colors\": [
+          \"#FFFFFF\",
+          \"#6e00ff\"
+        ]},
+      \"bold\": false,
+      \"italic\": false,
+      \"strikethrough\": false,
+      \"fields\": [
+        \"growth_rate\"
+      ]},{
+      \"type\": \"low to high\",
+      \"value\": null,
+      \"background_color\": null,
+      \"font_color\": null,
+      \"palette\": {
+        \"name\": \"Custom\",
+        \"colors\": [
+          \"#FFFFFF\",
+          \"#88ff78\"
+        ]},
+      \"bold\": false,
+      \"italic\": false,
+      \"strikethrough\": false,
+      \"fields\": [
+        \"percent_of_total\"
+      ]}]}' %}
+      {{ items_returned._link}}&sorts=order_items.sale_price+desc&limit=20"
+    }
   }
 
   measure: item_return_rate {

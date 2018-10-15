@@ -10,6 +10,10 @@ view: users {
   dimension: age {
     type: number
     sql: ${TABLE}.age ;;
+    group_label: "{% if  _user_attributes[\"first_name\"] == 'Rebecca' %}
+             {% else %} 'Some Label' {% endif %}"
+    label: "{% if  _user_attributes[\"first_name\"] == 'Rebecca' %}
+             {% else %} 'Age' {% endif %}"
   }
 
   dimension: age_group {
@@ -17,14 +21,18 @@ view: users {
     tiers: [15, 26, 36, 51, 66]
     style: integer
     sql: ${age} ;;
+    group_label: "{% if  _user_attributes[\"first_name\"] == 'Rebecca' %}
+    {% else %} 'Some Label' {% endif %}"
   }
 
   dimension: city {
+    group_label: "Address"
     type: string
     sql: ${TABLE}.city ;;
   }
 
   dimension: country {
+    group_label: "Address"
     type: string
     map_layer_name: countries
     sql: ${TABLE}.country ;;
@@ -42,11 +50,24 @@ view: users {
       year
     ]
     sql: ${TABLE}.created_at ;;
+    convert_tz: no
+  }
+
+  dimension: created_date_limit {
+    type: yesno
+    sql: ${created_raw} <= (select max(${created_raw}) from ${TABLE}) ;;
+  }
+
+  dimension: created_quarter_2 {
+    type: date_quarter
   }
 
   dimension: email {
     type: string
     sql: ${TABLE}.email ;;
+    # html: <span style="width:30px;background-color: red;">{{value}}</span> ;;
+    html: <div style="width:30px">{{value}}</div> ;;
+    tags: ["email"]
   }
 
   dimension: first_name {
@@ -83,6 +104,7 @@ view: users {
   }
 
   dimension: state {
+    group_label: "Address"
     type: string
     sql: ${TABLE}.state ;;
   }
@@ -93,6 +115,7 @@ view: users {
   }
 
   dimension: zip {
+    group_label: "Address"
     type: zipcode
     sql: ${TABLE}.zip ;;
   }
@@ -105,7 +128,7 @@ view: users {
   # ------ PS Case Study, Use Case #2 ------
   dimension: days_since_signup {
     type: number
-    sql: DATEDIFF(day, ${created_date}, current_date) ;;
+    expression: diff_days(${users.created_date}, now()) ;;
     group_label: "Registration"
   }
 
@@ -134,6 +157,7 @@ view: users {
 
   measure: count {
     type: count
+    html:  {{rendered_value}} ;;
     drill_fields: [user_details*, events.count]
   }
 

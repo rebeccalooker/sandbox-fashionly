@@ -80,8 +80,9 @@ explore: order_items {
   }
 }
 
+explore: products {}
+
 explore: product_comparisons {
-  label: "Products"
   view_label: "Product"
 #   join: distribution_centers {
 #    type: left_outer
@@ -114,6 +115,13 @@ explore: users {
     -inventory_items.product_id,
     -inventory_items.created_date
     ]
+
+  always_filter: {
+    filters: {
+      field: users.id
+      value: "NOT NULL"
+    }
+  }
 
   join: returns {
     type: left_outer
