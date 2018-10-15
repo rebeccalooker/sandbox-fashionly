@@ -157,7 +157,7 @@ view: users {
 
   measure: count {
     type: count
-    html:  {{rendered_value}} ;;
+    html:  {{linked_value}} ;;
     drill_fields: [user_details*, events.count]
   }
 
