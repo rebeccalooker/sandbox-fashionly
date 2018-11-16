@@ -156,8 +156,9 @@ view: users {
   # ----------------------------------------
 
   measure: count {
+    label: "{{ _filters['users.gender'] }} Users Count"
     type: count
-    html:  {{linked_value}} ;;
+#     html:  {{linked_value}} ;;
     drill_fields: [user_details*, events.count]
   }
 
@@ -223,3 +224,54 @@ view: users {
     ]
   }
 }
+
+
+# view: Male {
+#   sql_table_name: public.users ;;
+#
+#   dimension: id {
+#     type: number
+#     primary_key: yes
+#     sql: ${TABLE}.id ;;
+#     hidden: yes
+#   }
+#
+#   dimension: gender {
+#     type: string
+#     sql: ${TABLE}.gender ;;
+#     hidden: yes
+#   }
+#
+#   measure: count {
+#     label: "{{ _view._name }} Users Count"
+#     type: count
+#     filters: { field: gender value: "Male" }
+# #     html:  {{linked_value}} ;;
+# #     drill_fields: [user_details*, events.count]
+#   }
+# }
+#
+# view: Female {
+#   sql_table_name: public.users ;;
+#
+#   dimension: id {
+#     type: number
+#     primary_key: yes
+#     sql: ${TABLE}.id ;;
+#     hidden: yes
+#   }
+#
+#   dimension: gender {
+#     type: string
+#     sql: ${TABLE}.gender ;;
+#     hidden: yes
+#   }
+#
+#   measure: count {
+#     label: "{{ _view._name }} Users Count"
+#     type: count
+#     filters: { field: gender value: "Female" }
+# #     html:  {{linked_value}} ;;
+# #     drill_fields: [user_details*, events.count]
+#   }
+# }

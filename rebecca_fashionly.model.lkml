@@ -185,6 +185,20 @@ explore: users {
       order_sequences.is_first_purchase,
       order_sequences.has_subsequent_order]
   }
+
+#   join: Male {
+#     view_label: "Customer Details"
+#     sql_on: ${users.id} = ${Male.id} ;;
+#     type: inner
+#     relationship: one_to_one
+#   }
+#
+#   join: Female {
+#     view_label: "Customer Details"
+#     sql_on: ${users.id} = ${Female.id} ;;
+#     type: inner
+#     relationship: one_to_one
+#   }
 }
 
 explore: users_basic_information {

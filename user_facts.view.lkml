@@ -26,6 +26,12 @@ view: user_facts {
     hidden: yes
   }
 
+  dimension: fake_name {
+    label: "{{ fake_name._sql | strip }} Name"
+    type: string
+    sql: 'Rebecca Tester' ;;
+  }
+
   dimension: full_name {
     type: string
     sql: ${TABLE}.first_name || ' ' || ${TABLE}.last_name ;;
