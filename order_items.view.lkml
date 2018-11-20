@@ -1,4 +1,4 @@
-## 2018-11-20 another test comment
+## 2018-11-20 change the test comment
 
 view: order_items {
   sql_table_name: public.order_items ;;
