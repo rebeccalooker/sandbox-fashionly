@@ -1,3 +1,5 @@
+## 2018-11-20 another test comment
+
 view: order_items {
   sql_table_name: public.order_items ;;
 
