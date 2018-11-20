@@ -1,3 +1,5 @@
+## 2018-11-20 test comment
+
 view: users {
   sql_table_name: public.users ;;
 
