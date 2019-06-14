@@ -152,6 +152,7 @@ view: order_items {
       value: "-Cancelled, -Returned"
       }
     value_format_name: usd
+    html: {{total_gross_revenue}} ;;
   }
 
   measure: average_gross_revenue {
